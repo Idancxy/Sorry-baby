@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>I'm Sorry</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: #ffb6c1; /* light pink */
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    user-select: none;
+  }
+
+  #container {
+    background: #fff0f5;
+    padding: 40px 60px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+    max-width: 700px;
+    width: 90vw;
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: #d81b60; /* rich pink */
+  }
+
+  .message {
+    font-size: 1.25rem;
+    color: #333;
+    margin: 1rem 0;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+
+  .message.visible {
+    opacity: 1;
+  }
+
+  #buttons {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  button {
+    background-color: #ff69b4;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  button:focus {
+    outline: none;
+  }
+
+  button:hover {
+    background-color: #d81b60;
+    transform: scale(1.05);
+  }
+
+  button:active {
+    transform: scale(0.95);
+  }
+</style>
+</head>
+<body>
+  <div id="container">
+    <h1>Hey, Prisca. I regret what I did💔</h1>
+    <div id="messages">
+      <!-- Additional messages appear here -->
+    </div>
+    <div id="buttons">
+      <button id="nextBtn">Click Meeee</button>
+      <button id="restartBtn" style="display:none;">Restart</button>
+    </div>
+  </div>
+
+<script>
+  const additionalMessages = [
+  "I know I hurt you deeply.",
+    "You didn't deserve that.",
+    "I should be the last person that makes you cry.",
+    "I know I broke your trust...",
+    "...and i dont expect you to come back",
+    "but honestly, ",
+    "I just want you to be happy again",
+    " ",
+    "I love you so much more than words can say💕"
+ ];
+
+  const messagesContainer = document.getElementById('messages');
+  const nextBtn = document.getElementById('nextBtn');
+  const restartBtn = document.getElementById('restartBtn');
+
+  let currentIndex = 0;
+
+  // Sound effects setup
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playClickSound() {
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // A4 note
+
+    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.1);
+  }
+
+  function showNextMessage() {
+    if (currentIndex < additionalMessages.length) {
+      const msgText = additionalMessages[currentIndex];
+      const msgDiv = document.createElement('div');
+      msgDiv.textContent = msgText;
+      msgDiv.classList.add('message');
+      messagesContainer.appendChild(msgDiv);
+      // Allow CSS transition to apply
+      requestAnimationFrame(() => {
+        msgDiv.classList.add('visible');
+      });
+      currentIndex++;
+      playClickSound();
+    }
+    if (currentIndex === additionalMessages.length) {
+      nextBtn.style.display = 'none';
+      restartBtn.style.display = 'inline-block';
+    }
+  }
+
+  function restartGame() {
+    currentIndex = 0;
+    messagesContainer.innerHTML = '';
+    nextBtn.style.display = 'inline-block';
+    restartBtn.style.display = 'none';
+    playClickSound();
+  }
+
+  nextBtn.addEventListener('click', () => {
+    // To unlock AudioContext on user interaction (especially on mobile)
+    if(audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    showNextMessage();
+  });
+
+  restartBtn.addEventListener('click', () => {
+    if(audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    restartGame();
+  });
+</script>
+</body>
+</html>
+
+
